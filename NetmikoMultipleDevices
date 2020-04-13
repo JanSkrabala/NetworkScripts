@@ -1,0 +1,59 @@
+from netmiko import ConnectHandler
+from netmiko.ssh_exception import NetMikoTimeoutException
+from paramiko.ssh_exception import SSHException
+from netmiko.ssh_exception import AuthenticationException
+
+
+def commands():
+    with open('commands') as f:
+        commands_to_send = f.read().splitlines()
+    return commands_to_send
+
+
+def devices():
+    with open('devices') as f:
+        devices_list = f.read().splitlines()
+    return devices_list
+
+
+def user_pass():
+    username = input("username: ")
+    password = input("password: ")
+    return username, password
+
+
+def main():
+    u, p = user_pass()
+    for device in devices():
+        print('Connecting to device' + device)
+        ip_address_of_device = device
+        ios_device = {
+            'device_type': 'cisco_ios',
+            'ip': ip_address_of_device,
+            'username': u,
+            'password': p
+        }
+
+        try:
+            net_connect = ConnectHandler(**ios_device)
+        except AuthenticationException:
+            print('Authentication failure: ' + ip_address_of_device)
+            continue
+        except NetMikoTimeoutException:
+            print('Timeout to device: ' + ip_address_of_device)
+            continue
+        except EOFError:
+            print('End of file while attempting device ' + ip_address_of_device)
+            continue
+        except SSHException:
+            print('SSH Issue. Are you sure SSH is enabled? ' + ip_address_of_device)
+            continue
+        except Exception as unknown_error:
+            print('Some other error: ' + str(unknown_error))
+            continue
+        output = net_connect.send_config_set(commands())
+        print(output)
+
+
+if __name__ == "__main__":
+    main()
