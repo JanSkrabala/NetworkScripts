@@ -3,25 +3,25 @@ from netmiko.ssh_exception import NetMikoTimeoutException
 from paramiko.ssh_exception import SSHException
 from netmiko.ssh_exception import AuthenticationException
 
-
+#read text file with comands to run
 def commands():
     with open('commands') as f:
         commands_to_send = f.read().splitlines()
     return commands_to_send
 
-
+#read text file with list of devices to iterate through
 def devices():
     with open('devices') as f:
         devices_list = f.read().splitlines()
     return devices_list
 
-
+#user input for username and password (for security use getpass)
 def user_pass():
     username = input("username: ")
     password = input("password: ")
     return username, password
 
-
+#Main loop to call devices 
 def main():
     u, p = user_pass()
     for device in devices():
@@ -33,7 +33,7 @@ def main():
             'username': u,
             'password': p
         }
-
+        #netmiko ConnectHandler and connection error handling 
         try:
             net_connect = ConnectHandler(**ios_device)
         except AuthenticationException:
