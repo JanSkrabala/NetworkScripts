@@ -1,0 +1,89 @@
+import ldap3
+from ldap3 import Server, Connection
+from ldap3.extend.microsoft.addMembersToGroups import ad_add_members_to_groups as addUsersInGroups
+import sys
+
+
+class AdDetails:
+    ipaddress = "ip-address of AD server"
+    domain = 'your domain'
+    searchbase = 'DC="   ", DC=" " '
+    username = input("Please enter your username: ")
+    password = input("Please enter your password: ")
+    adgroup = input("Enter Active directory group: ")
+
+
+server = Server(AdDetails.ipaddress, get_info=ldap3.ALL)
+try:
+    conn = Connection(server, AdDetails.username, AdDetails.password, auto_bind=True)
+    print("*" * 30)
+    print("Ldap connected \n")
+
+
+except:
+
+    print("*" * 30)
+    print('LDAP Bind Failed: ')
+    print("\n")
+    print("Exit...................")
+    sys.exit(1)
+
+
+def group():
+    conn.search(search_base=AdDetails.searchbase, search_filter='(objectclass=group)', attributes=[ldap3.ALL_ATTRIBUTES,
+                                                                                      ldap3.ALL_OPERATIONAL_ATTRIBUTES])
+
+    for entry in conn.entries:
+        gname = entry.name
+        groups = entry.distinguishedName
+        if AdDetails.adgroup in gname:
+            return groups
+        else:
+            pass
+
+
+def error():
+    if group() is None:
+        print(f"An error occurred. Group {AdDetails.adgroup} does not exist. ")
+        sys.exit(1)
+
+
+def user():
+    error()
+    conn.search(search_base=AdDetails.searchbase, search_filter='(objectclass=person)',
+                attributes=[ldap3.ALL_ATTRIBUTES,
+                            ldap3.ALL_OPERATIONAL_ATTRIBUTES])
+
+    with open('users') as f:
+        users_list = f.read().splitlines()
+    for entry in conn.entries:
+        result = entry.name
+        try:
+            get = entry.memberOf
+        except:
+            get = (entry.name, " No group")
+            pass
+        for u in users_list:
+            if u in result:
+                if group() in get:
+                    print("*" * 80)
+                    print(f"\n{u} is already member of {group()} \n")
+                    print("Skipped nothing to do ")
+                elif group() not in get:
+                    dname = entry.distinguishedName
+                    print("*" * 80)
+                    print(f"\n{u} not in group adding user to the {group()} \n")
+                    groups_dn = str(group())
+                    members_dn = str(dname)
+                    addUsersInGroups(conn, members_dn, groups_dn, raise_error="failed", fix="user in group")
+                    print(f"{u} have been added to the group ")
+                    print("*" * 80)
+                    print("\n")
+
+
+if __name__ == '__main__':
+    AdDetails
+    group()
+    user()
+    print("\n")
+    print("Exit...................")
