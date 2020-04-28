@@ -4,6 +4,7 @@ from netmiko.ssh_exception import NetMikoTimeoutException
 from paramiko.ssh_exception import SSHException
 from netmiko.ssh_exception import AuthenticationException
 
+
 def main_def():
     username = input("Enter your username: ")
     password = input("Enter you password:  ")
@@ -65,4 +66,5 @@ def main_def():
             print("DNS entry is correct")
 
 
-main_def()
+if __name__ == "__main__":
+    main_def()
