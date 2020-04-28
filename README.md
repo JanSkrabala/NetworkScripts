@@ -1,4 +1,3 @@
-# NetworkScripts
 
 # Colection of simple python scripts for remote management of multiple devices.
 
