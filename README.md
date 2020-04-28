@@ -1,6 +1,6 @@
 # NetworkScripts
 
-Colection of simple python scripts for remote management of multiple devices.
+# Colection of simple python scripts for remote management of multiple devices.
 
 NapalmMultipleDevices - Configuration push configuration to multiple devices using Napalm. Utilizing list to loop through devices
 
