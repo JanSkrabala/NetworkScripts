@@ -65,5 +65,4 @@ def main_def():
             print("DNS entry is correct")
 
 
-
 main_def()
