@@ -13,4 +13,4 @@ LinuxDNSChange - Uses Netmiko to connect and loop through linux OS devices read 
 
 Meraki Bandwith - As the API can not be used to get meraki bandwith can use API to get urls of MXs and Selenium to navigate the page and webscrape the bandwith. API to get urls of meraki devices (get_mx_url.py) then webscrape with (mx_webscrape.py) output in csv.
 
-meraki_network_clients - Can be used to get all the devices details on specific SSID acroos the organization. With adjutment can get detail by OS, decription, status etc..
+meraki_network_clients - Can be used to get all the devices details on specific SSID across the organization. With adjutment can get detail by OS, decription, status etc..
