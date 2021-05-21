@@ -1,9 +1,6 @@
 import meraki
 import time
-import bs4
 import pickle
-
-bs = bs4.BeautifulSoup
 
 
 def store_id():
