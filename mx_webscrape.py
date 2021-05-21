@@ -61,7 +61,7 @@ def web_scrape():
 
             time.sleep(2)
             print(s_bandwith)
-            df = pd.DataFrame([b], columns=['Store', 'Bandwidth'])
+            df = pd.DataFrame([b], columns=['Identifier', 'Bandwidth'])
 
             if header == True:
                 mode = 'w'
