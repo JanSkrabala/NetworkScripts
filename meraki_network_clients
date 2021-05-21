@@ -1,0 +1,50 @@
+import meraki
+import time
+import bs4
+import pandas as pd
+
+
+bs = bs4.BeautifulSoup
+
+header = False
+
+def store_id():
+    API_KEY = 'api key'
+    org_id = 'organization ID'
+    dashboard = meraki.DashboardAPI(API_KEY)
+    n = dashboard.organizations.getOrganizationNetworks(org_id, total_pages='all')
+    stores = []
+
+    for e in n:
+        s = e['id'], e['name'], e['tags']
+        stores.append(s)
+
+    devices = []
+
+    for id in stores:
+        time.sleep(1)
+        try:
+            result = dashboard.networks.getNetworkClients(id[0], total_pages='all')
+        except:
+            pass
+
+        for e in result:
+
+            try:
+                if 'SSID' in e['ssid']:
+                    dev = id[1], e['description'], e['ip'], e['mac'], e['os'], e['status'], e['ssid']
+                    devices.append(dev)
+                    print(dev)
+
+                    df = pd.DataFrame([dev], columns=[
+                        'Store', 'Description', 'IP', 'Mac Address', 'OS', 'Status', 'SSID'])
+
+                    if header == True:
+                        mode = 'w'
+                    else:
+                        mode = 'a'
+                    df.to_csv('clients_ssid.csv', mode=mode, header=header, index=False)
+            except: e['ssid'] = None
+
+
+store_id()
